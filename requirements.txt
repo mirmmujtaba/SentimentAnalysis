@@ -1,0 +1,8 @@
+Flask
+pandas
+numpy
+matplotlib
+tqdm
+nltk
+gensim
+scikit-learn
