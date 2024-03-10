@@ -11,20 +11,14 @@ from sklearn.linear_model import LogisticRegression
 import gensim.downloader as api
 
 def clean_tweet(tweet):
-    # Remove URLs
     tweet = re.sub(r'http\S+|www\S+|https\S+', '', tweet, flags=re.MULTILINE)
-    # Remove user @ references and '#' from tweet
     tweet = re.sub(r'\@\w+|\#','', tweet)
-    # Remove HTML entities
     tweet = re.sub(r'&[a-z]+;', '', tweet)
-    # Convert to lowercase
     tweet = tweet.lower()
-    # Remove punctuations and numbers
     tweet = re.sub(r'[^\w\s]', '', tweet)
     tweet = re.sub(r'\d+', '', tweet)
     return tweet
 
-# Download a smaller model, for example, "glove-twitter-100"
 word_vectors = api.load("glove-twitter-100")
 
 def vectorize_tweet(tweet, word_vectors):
@@ -63,6 +57,24 @@ def predict_api():
         return jsonify({'prediction': 'Positive', 'probability': probability})
     else:
         return jsonify({'prediction': 'Negative', 'probability': 1 - probability})
+
+@app.route('/predict', methods = ['GET', 'POST'])
+def predict():
+    if request.method == 'POST':
+        data = list(request.form.values())[0]
+        text_to_classify = clean_tweet(data)
+        vectorized_tweet = vectorize_tweet(text_to_classify, word_vectors)
+        vectorized_tweet = vectorized_tweet.reshape(1, -1)  # Reshape for single prediction
+        prediction = model.predict(vectorized_tweet)
+        if prediction == 0:
+            return render_template("predict.html", prediction = 'Negative')
+        else:
+            return render_template("predict.html", prediction = 'Positive')
+    else:
+        return render_template("form.html")
+    
+    
+
 
 if __name__ == '__main__':
     app.run(debug = True)

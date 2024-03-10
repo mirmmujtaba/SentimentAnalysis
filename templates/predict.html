@@ -1,0 +1,18 @@
+<!-- templates/predict.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Text Classifier</title>
+</head>
+<body>
+    <form action="/predict" method="post">
+        <textarea name="text_to_classify"></textarea>
+        <input type="submit" value="Classify">
+    </form>
+
+    {% if prediction is not none %}
+        <p>Prediction: {{ prediction }}</p>
+    {% endif %}
+</body>
+</html>
